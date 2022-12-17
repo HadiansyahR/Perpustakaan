@@ -3,9 +3,8 @@ from Model.User import User
 
 class ControllerUser:
     conMan = ConnectionManager("perpustakaan")
-    db = conMan.logOn()
-
-    userCursor = db.cursor()
+    # db = conMan.logOn()
+    # userCursor = db.cursor()
     query = ''
 
 
@@ -16,11 +15,14 @@ class ControllerUser:
         return False
 
     def userLogin(self, username, password):
+        db = self.conMan.logOn()
+        userCursor = db.cursor()
+
         query = "SELECT * FROM user"
         listUser = []
 
-        self.userCursor.execute(query)
-        res = self.userCursor.fetchall()
+        userCursor.execute(query)
+        res = userCursor.fetchall()
 
         for row in res:
             user = User(row[0], row[1], row[2])
@@ -28,8 +30,9 @@ class ControllerUser:
 
         for user in listUser:
             if (username == user.username and password == user.password) and (username != 'admin' and password != 'admin123'):
+                db.close()
                 return True
-
+        db.close()
         return False
 
 

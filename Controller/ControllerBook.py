@@ -3,14 +3,15 @@ from Model.Book import Book
 
 class ControllerBook:
     conMan = ConnectionManager("perpustakaan")
-
+    # db = conMan.logOn()
+    # bookCursor = db.cursor()
     query = ''
 
     def readBook(self):
         query = "SELECT * FROM book"
         listBook = []
 
-        db = conMan.logOn()
+        db = self.conMan.logOn()
         bookCursor = db.cursor()
 
         bookCursor.execute(query)
@@ -55,7 +56,7 @@ class ControllerBook:
         return listBook
 
     def createBook(self):
-        db = conMan.logOn()
+        db = self.conMan.logOn()
         bookCursor = db.cursor()
 
         print('\nINPUT DATA BUKU\n')
@@ -65,13 +66,15 @@ class ControllerBook:
         quantity = input('Jumlah Buku: ')
 
         query = "INSERT INTO book VALUES('%s', '%s', '%s', %i)" % (book_id, book_name, book_genre, int(quantity))
-        self.bookCursor.execute(query)
-        self.db.commit()
+        bookCursor.execute(query)
+        db.commit()
 
-        if self.bookCursor.rowcount > 0:
+        if bookCursor.rowcount > 0:
             print('Data Berhasil Ditambahkan!!!')
 
     def updateBook(self, listbook):
+        db = self.conMan.logOn()
+        bookCursor = db.cursor()
         print('\nUPDATE DATA BUKU\n')
         book_id = input('Masukkan Id Buku yang akan diubah: ')
         dataStatus = False
@@ -93,13 +96,16 @@ class ControllerBook:
 
             query = "UPDATE book SET book_name = '%s', book_genre = '%s', quantity = %i WHERE book_id = '%s'" % (
                 book_name, book_genre, int(quantity), book_id)
-            self.bookCursor.execute(query)
-            self.db.commit()
+            bookCursor.execute(query)
+            db.commit()
 
-            if self.bookCursor.rowcount > 0:
+            if bookCursor.rowcount > 0:
                 print('Data Berhasil Diubah!!!')
 
     def deleteBook(self, listbook):
+        db = self.conMan.logOn()
+        bookCursor = db.cursor()
+
         print('\nDELETE DATA BUKU\n')
         book_id = input('Masukkan Id Buku yang akan dihapus: ')
         dataStatus = False
@@ -115,8 +121,8 @@ class ControllerBook:
             print('Data Tidak Ada')
         else:
             query = "DELETE FROM book WHERE book_id = '%s'" % book_id
-            self.bookCursor.execute(query)
-            self.db.commit()
+            bookCursor.execute(query)
+            db.commit()
 
-            if self.bookCursor.rowcount > 0:
+            if bookCursor.rowcount > 0:
                 print('Data Berhasil Dihapus!!!')

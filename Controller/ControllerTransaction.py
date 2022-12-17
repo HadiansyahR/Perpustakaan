@@ -1,5 +1,4 @@
 from Connector import ConnectionManager
-from Controller.ControllerBook import ControllerBook
 from Model.Transaction import Transaction
 from Model.Book import Book
 from Model.User import User
@@ -7,22 +6,21 @@ from Model.User import User
 
 class ControllerTransaction:
     conMan = ConnectionManager("perpustakaan")
-    db = conMan.logOn()
-
-    conBook = ControllerBook()
-
-    transCursor = db.cursor()
+    # db = self.conMan.logOn()
+    # transCursor = db.cursor()
     query = ''
 
     def pinjamBuku(self, name, listbook):
+        db = self.conMan.logOn()
+        transCursor = db.cursor()
         dataStatus = False
 
-        print('PEMINJAMAN BUKU\n')
+        print('\nPEMINJAMAN BUKU\n')
         book_id = input('Masukkan ID Buku yang akan dipinjam: ')
 
         query = "SELECT * FROM user WHERE username = '%s'" % name
-        self.transCursor.execute(query)
-        res = self.transCursor.fetchall()
+        transCursor.execute(query)
+        res = transCursor.fetchall()
 
         for row in res:
             objUser = User(row[0], row[1], row[2])
@@ -38,30 +36,35 @@ class ControllerTransaction:
 
         if not dataStatus:
             print('Data Tidak Ada')
+            db.close()
         else:
             if objBook.quantity == 0:
                 print('Maaf buku habis')
+                db.close()
             else:
                 query = "INSERT INTO transaction VALUES (NULL, '%s', '%s', '%s', '%s')" \
                         % (objUser.id, objBook.book_id, objTran.borrow_date, objTran.return_date)
-                self.transCursor.execute(query)
-                self.db.commit()
+                transCursor.execute(query)
+                db.commit()
 
                 query = "UPDATE book SET quantity = quantity-1 WHERE book_id = '%s'" % objBook.book_id
-                self.transCursor.execute(query)
-                self.db.commit()
+                transCursor.execute(query)
+                db.commit()
 
-                if self.transCursor.rowcount > 0:
+                if transCursor.rowcount > 0:
                     print('Peminjaman Berhasil!!!')
+                db.close()
 
     def readTransaction(self, name):
+        db = self.conMan.logOn()
+        transCursor = db.cursor()
         print("\nDATA PEMINJAMAN USER:", name, "\n")
 
         listTrans = []
 
         query = "SELECT * FROM user WHERE username = '%s'" % name
-        self.transCursor.execute(query)
-        res = self.transCursor.fetchall()
+        transCursor.execute(query)
+        res = transCursor.fetchall()
 
         for row in res:
             objUser = User(row[0], row[1], row[2])
@@ -74,11 +77,12 @@ class ControllerTransaction:
                 "transaction.return_date FROM ((user INNER JOIN transaction ON user.user_id = transaction.user_id) " \
                 "INNER JOIN book ON transaction.book_id = book.book_id) WHERE user.user_id = '%s'" % objUser.id
 
-        self.transCursor.execute(query)
-        res = self.transCursor.fetchall()
+        transCursor.execute(query)
+        res = transCursor.fetchall()
 
         if len(res) < 1:
             print("User belum pernah melakukan peminjaman buku...")
+            db.close()
         else:
             for row in res:
                 objTrans = Transaction(row[0], row[1], row[2])
@@ -103,3 +107,5 @@ class ControllerTransaction:
                     print(f"{trans_id}\t\t\t\t{username}\t\t{book_name}\t\t{borrow_date}\t{return_date}")
                 else:
                     print(f"{trans_id}\t\t\t\t{username}\t\t{book_name}\t{borrow_date}\t{return_date}")
+
+            db.close()

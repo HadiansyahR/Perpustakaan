@@ -22,7 +22,7 @@ class UserView:
                 case '2':
                     listBook = conBook.readBook()
                     conTran.pinjamBuku(name, listBook)
-                    conBook.readBook()
+                    # conBook.readBook()
                     if not UserView.continueUser():
                         print('Terimakasih telah menggunakan program kami')
                         break
