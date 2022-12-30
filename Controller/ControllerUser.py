@@ -34,19 +34,3 @@ class ControllerUser:
                 return True
         db.close()
         return False
-
-
-
-
-        # print(self.userCursor.rowcount)
-        #
-        # for row in res:
-        #     print("Id = ", row[0])
-        #     print("Username = ", row[1])
-        #     print("Password = ", row[2])
-
-        # rowNum = self.userCursor.execute(query)
-        # print(rowNum)
-        # for i in range(0, rowNum):
-        #     result = self.userCursor.fetchone()
-        #     print(result)

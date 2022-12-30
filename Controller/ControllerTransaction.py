@@ -1,15 +1,23 @@
+# Import class yang dibutuhkan
 from Connector import ConnectionManager
 from Model.Transaction import Transaction
 from Model.Book import Book
 from Model.User import User
 
 
+# Definisi class ControllerTransaction
 class ControllerTransaction:
+    # Buat Object Connection Manager dengan argumen perpustakaan, perpustakaan ini nama databasenya
     conMan = ConnectionManager("perpustakaan")
-    # db = self.conMan.logOn()
-    # transCursor = db.cursor()
+
+    # Buat variable query yang nantinya akan digunakan sebagai tempat menyimpan query
     query = ''
 
+    # Buat method pinjamBuku untuk melakukan aksi pinjam buku
+    # Parameternya ada self, name dan listbook
+    # Self memungkinkan kita untuk mengakses ke atribut dan method pada setiap objek yang dibuat
+    # Name untuk menampilkan nama user yang login
+    # Listbook berisi data buku yang diambil dari method readBook
     def pinjamBuku(self, name, listbook):
         db = self.conMan.logOn()
         transCursor = db.cursor()
@@ -55,6 +63,7 @@ class ControllerTransaction:
                     print('Peminjaman Berhasil!!!')
                 db.close()
 
+    # Buat method readTransaction untuk melihat data transaksi user
     def readTransaction(self, name):
         db = self.conMan.logOn()
         transCursor = db.cursor()
@@ -88,7 +97,8 @@ class ControllerTransaction:
                 objTrans = Transaction(row[0], row[1], row[2])
                 listTrans.append(objTrans)
 
-            print('%s\t%s\t%s\t\t\t\t%s\t%s' % ('Transaction ID', 'Username', 'Book Name', 'Borrow Date', 'Return Date'))
+            print(
+                '%s\t%s\t%s\t\t\t\t%s\t%s' % ('Transaction ID', 'Username', 'Book Name', 'Borrow Date', 'Return Date'))
 
             for trans in listTrans:
                 trans_id = trans.transaction_id
